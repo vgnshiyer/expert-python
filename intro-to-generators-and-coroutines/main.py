@@ -55,3 +55,38 @@ g.send("python comes now")
 
 # 5] A decorator to prime a coroutine
 
+def prime_it(func):
+    def wrapper(*a, **kw):
+        f = func(*a, **kw)
+        f.send(None)
+        return f
+    return wrapper
+
+@prime_it
+def grep(pattern):
+    print(f"Looking for {pattern}")
+    while True:
+        line = (yield)
+        if pattern in line:
+            print(line)
+
+g = grep("python")
+g.send("python comes...")
+
+# 6] bogus
+
+def countdown(n):
+    print(f"Counting down from {n}")
+    while n >= 0:
+        newval = (yield n)
+        # if new val comes in
+        if newval is not None:
+            n = newval
+        else:
+            n -= 1
+
+c = countdown(100)
+for x in c:
+    print(x)
+    if x == 95:
+        c.send(3) # start counting down from 3
