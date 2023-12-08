@@ -4,6 +4,7 @@
 
 from tasks import Task
 from collections import deque
+from system_call import SystemCall
 
 # scheduler which alternates between tasks when they yield
 class Scheduler:
@@ -29,6 +30,11 @@ class Scheduler:
             task = self.ready.popleft()
             try:
                 result = task.run()
+                if isinstance(result, SystemCall):
+                    result.task = task
+                    result.sched = self
+                    result.handle()
+                    continue
             except StopIteration:
                 self.exit(task)
                 continue
