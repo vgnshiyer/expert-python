@@ -1,24 +1,20 @@
 from scheduler import Scheduler
-from system_call import getTid
+from system_call import getTid, NewTask, KillTask
 
 if __name__ == '__main__':
     def foo():
         mytid = yield getTid()
-        i = 5
-        while i > 0:
-            print("I am foo")
+        while True:
+            print(f"I'm foo, {mytid}")
             yield
-            i -= 1
 
-    def bar():
-        mytid = yield getTid()
-        i = 10
-        while i > 0:
-            print("I am bar")
+    def main():
+        child = yield NewTask(foo())
+        for i in range(5):
             yield
-            i -= 1
+        yield KillTask(child)
+        print("main done")
 
     scheduler = Scheduler()
-    scheduler.new(foo())
-    scheduler.new(bar())
+    scheduler.new(main())
     scheduler.mainloop()
