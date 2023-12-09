@@ -30,3 +30,12 @@ class KillTask(SystemCall):
         else:
             self.task.sendval = False
         self.sched.schedule(self.task)
+
+class WaitTask(SystemCall):
+    def __init__(self, tid):
+        self.tid = tid
+    def handle(self):
+        result = self.sched.waitforexit(self.task, self.tid)
+        self.task.sendval = result
+        if not result:
+            self.sched.schedule(self.task)

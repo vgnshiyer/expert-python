@@ -13,3 +13,6 @@ class Task:
 
     def run(self):
         return self.target.send(self.sendval)
+
+    def __repr__(self):
+        return f"Task {self.id}"
